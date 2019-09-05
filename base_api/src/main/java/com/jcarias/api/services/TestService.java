@@ -1,11 +1,14 @@
 package com.jcarias.api.services;
 
 import com.jcarias.api.entities.CommitsRequest;
+import com.jcarias.api.helpers.MalformedRequestSyntaxException;
 import com.jcarias.api.helpers.Partition;
+import com.jcarias.api.helpers.UncaughtException;
 import com.jcarias.git.CommitInfo;
 import com.jcarias.git.RepoCommitExtractor;
 import com.jcarias.git.converters.CommitsInfoToJsonArray;
 import com.jcarias.git.converters.Converter;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,7 +26,7 @@ public class TestService {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getTestService() {
+	public Response getTestService() throws UncaughtException {
 
 		RepoCommitExtractor extractor = null;
 		try {
@@ -43,17 +46,21 @@ public class TestService {
 
 			return Response.status(502).entity(e.getMessage())
 					.type("text/plain").build();
+		} catch (Throwable t) {
+			throw new UncaughtException();
 		}
 	}
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getCommitsFromRepo(CommitsRequest commitsRequest) {
+	public Response getCommitsFromRepo(CommitsRequest commitsRequest) throws MalformedRequestSyntaxException {
+
+		if (StringUtils.isBlank(commitsRequest.getUrl())) {
+			throw new MalformedRequestSyntaxException("No repo URL was found in the request");
+		}
 
 		String url = commitsRequest.getUrl();
-
-
 		try {
 			//Open or Clone repository to read commit list
 			RepoCommitExtractor extractor = new RepoCommitExtractor(url);
@@ -61,9 +68,10 @@ public class TestService {
 
 			//Partition of results into chunks
 			Partition<CommitInfo> commitInfoPartition = new Partition(new ArrayList(commits), commitsRequest.getPageSize());
+			List<CommitInfo> commitsPage = commitInfoPartition.get(commitsRequest.getPage());
 
+			//Conversion of the files
 			Converter<Collection<CommitInfo>, JSONArray> converter = new CommitsInfoToJsonArray();
-			List<CommitInfo> commitsPage = commitInfoPartition.get(commitsRequest.getPage() - 1);
 			JSONArray jsonArray = converter.convert(commitsPage);
 
 			JSONObject responseData = new JSONObject();
@@ -72,6 +80,7 @@ public class TestService {
 			responseData.put("totalPages", commitInfoPartition.size());
 			responseData.put("pageSize", commitsRequest.getPageSize());
 			responseData.put("commits", jsonArray);
+
 			return Response.ok(responseData.toString()).build();
 
 		} catch (IOException e) {
@@ -81,6 +90,8 @@ public class TestService {
 			Response.serverError().build();
 			return Response.status(502).entity(e.getMessage())
 					.type("text/plain").build();
+		} catch (Throwable t) {
+			return new UncaughtException().toResponse(t);
 		}
 	}
 }

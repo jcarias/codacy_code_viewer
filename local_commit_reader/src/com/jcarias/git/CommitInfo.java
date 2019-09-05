@@ -6,7 +6,7 @@ import java.util.Date;
  * Entity class to store commit information
  */
 public class CommitInfo {
-	private String id;
+	private String sha;
 	private String message;
 	private Date date;
 	private String authorName;
@@ -19,14 +19,14 @@ public class CommitInfo {
 	 * @param authorName the committer name;
 	 */
 	public CommitInfo(String id, String message, Date date, String authorName) {
-		this.id = id;
+		this.sha = id;
 		this.message = message;
 		this.date = date;
 		this.authorName = authorName;
 	}
 
-	public String getId() {
-		return id;
+	public String getSha() {
+		return sha;
 	}
 
 	public String getMessage() {
