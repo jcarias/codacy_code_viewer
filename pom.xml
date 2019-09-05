@@ -13,7 +13,6 @@
 
     <modules>
         <module>local_commit_reader</module>
-        <module>commits_api</module>
         <module>base_api</module>
     </modules>
 
