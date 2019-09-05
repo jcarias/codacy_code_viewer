@@ -1,6 +1,7 @@
 package com.jcarias.git.converters;
 
-import com.jcarias.git.CommitInfo;
+
+import com.jcarias.git.model.CommitInfo;
 import org.json.JSONArray;
 
 import java.util.Collection;

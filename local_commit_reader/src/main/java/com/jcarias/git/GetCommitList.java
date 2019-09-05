@@ -2,6 +2,7 @@ package com.jcarias.git;
 
 import com.jcarias.git.converters.CommitsInfoToJsonArray;
 import com.jcarias.git.converters.Converter;
+import com.jcarias.git.model.CommitInfo;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.json.JSONArray;
 

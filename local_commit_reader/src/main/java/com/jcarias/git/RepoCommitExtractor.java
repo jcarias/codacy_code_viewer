@@ -1,5 +1,6 @@
 package com.jcarias.git;
 
+import com.jcarias.git.model.CommitInfo;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.eclipse.jgit.api.Git;
