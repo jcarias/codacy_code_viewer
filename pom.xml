@@ -9,11 +9,12 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
 
-    <name>Multi Chapter Simple Parent Project</name>
+    <name>Codacy Commit Viewer</name>
 
     <modules>
         <module>local_commit_reader</module>
         <module>base_api</module>
+        <module>github_api_client</module>
     </modules>
 
     <properties>
