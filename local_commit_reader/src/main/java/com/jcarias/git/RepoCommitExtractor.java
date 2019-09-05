@@ -1,6 +1,8 @@
 package com.jcarias.git;
 
 import com.jcarias.git.model.CommitInfo;
+import com.jcarias.git.model.Person;
+import com.jcarias.git.model.PersonJGit;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.eclipse.jgit.api.Git;
@@ -54,7 +56,7 @@ public class RepoCommitExtractor {
 	}
 
 	private Repository openLocalRepo() throws IOException {
-		File localRepoDir = new File(this.repoDir + File.separator+ ".git");
+		File localRepoDir = new File(this.repoDir + File.separator + ".git");
 		Git git = Git.open(localRepoDir);
 		return git.getRepository();
 	}
@@ -79,11 +81,15 @@ public class RepoCommitExtractor {
 			walk.markStart(firstCommit);
 
 			for (RevCommit commit : walk) {
+				Person committer = new PersonJGit(commit.getCommitterIdent());
+				Person author = new PersonJGit(commit.getAuthorIdent());
+
 				CommitInfo commitInfo = new CommitInfo(
 						commit.getId().getName(),
 						commit.getShortMessage(),
 						commit.getCommitterIdent().getWhen(),
-						commit.getCommitterIdent().getName()
+						committer,
+						author
 				);
 
 				commits.add(commitInfo);

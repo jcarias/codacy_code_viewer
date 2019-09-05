@@ -9,20 +9,15 @@ public class CommitInfo {
 	private String sha;
 	private String message;
 	private Date date;
-	private String authorName;
+	private Person author;
+	private Person committer;
 
-	/**
-	 * Constructor
-	 * @param sha the commit Hash
-	 * @param message The commit message
-	 * @param date the commit date
-	 * @param authorName the committer name;
-	 */
-	public CommitInfo(String sha, String message, Date date, String authorName) {
+	public CommitInfo(String sha, String message, Date date, Person author, Person committer) {
 		this.sha = sha;
 		this.message = message;
 		this.date = date;
-		this.authorName = authorName;
+		this.author = author;
+		this.committer = committer;
 	}
 
 	public String getSha() {
@@ -37,7 +32,11 @@ public class CommitInfo {
 		return date;
 	}
 
-	public String getAuthorName() {
-		return authorName;
+	public Person getAuthor() {
+		return author;
+	}
+
+	public Person getCommitter() {
+		return committer;
 	}
 }
