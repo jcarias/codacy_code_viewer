@@ -41,7 +41,7 @@ public class RepoCommitExtractor {
 				repository = cloneRemoteRepo(this.repoURL);
 			}
 		} else {
-			throw new MalformedURLException(String.format("repoURL '%s' is not a valid URL"));
+			throw new MalformedURLException(String.format("repoURL '%s' is not a valid URL", repoURL));
 		}
 	}
 
