@@ -25,10 +25,14 @@ public class GitHubApiClient {
 
 	private URL repoUrl;
 	private GitGubRepoParams repoParams;
+	int pageSize;
+	private String lastSha;
 
-	public GitHubApiClient(URL repoUrl) throws IncorrectHostException {
+	public GitHubApiClient(URL repoUrl, int pageSize, String lastSha) throws IncorrectHostException {
 		this.repoUrl = repoUrl;
 		this.repoParams = new GitGubRepoUrlParser().parse(repoUrl);
+		this.pageSize=pageSize;
+		this.lastSha=lastSha;
 	}
 
 
@@ -47,7 +51,12 @@ public class GitHubApiClient {
 			WebTarget webTarget = client.target(API_ADDRESS)
 					.path(this.repoParams.getOwner())
 					.path(this.repoParams.getRepository())
-					.path("commits");
+					.path("commits")
+					.queryParam("per_page", this.pageSize);
+
+			if(this.lastSha!=null){
+				webTarget.queryParam("sha", this.lastSha);
+			}
 
 			Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 			Response response = invocationBuilder.get();
@@ -59,8 +68,7 @@ public class GitHubApiClient {
 				for (Object object : commitsArray) {
 					if (object instanceof Map) {
 						Map commitMap = (Map) object;
-						String sha = (String) commitMap.get("sha");
-						CommitInfo commit = parseCommit(sha, (Map) commitMap.get("commit"));
+						CommitInfo commit = parseCommit(commitMap);
 						commits.add(commit);
 					}
 				}
@@ -72,13 +80,24 @@ public class GitHubApiClient {
 	}
 
 
-	private CommitInfo parseCommit(String sha, Map commit) {
+	private CommitInfo parseCommit(Map commitMap) {
+		String sha = (String) commitMap.get("sha");
 
-		Map authorMap = (Map) commit.get("author");
-		Person author = new PersonParser().parse(authorMap);
+		Map commit = (Map) commitMap.get("commit");
 
-		Map committerMap = (Map) commit.get("committer");
-		Person committer = new PersonParser().parse(committerMap);
+		Map commitAuthorMap = (Map) commit.get("author");
+		Person author = new PersonParser().parse(commitAuthorMap);
+		Map authorMap = (Map) commitMap.get("author");
+		if (authorMap != null) {
+			author.setAvatarUrl((String) authorMap.get("avatar_url"));
+		}
+
+		Map commitCommitterMap = (Map) commit.get("committer");
+		Person committer = new PersonParser().parse(commitCommitterMap);
+		Map committerMap = (Map) commitMap.get("committer");
+		if (committerMap != null) {
+			committer.setAvatarUrl((String) committerMap.get("avatar_url"));
+		}
 
 		String message = (String) commit.get("message");
 

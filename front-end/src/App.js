@@ -4,10 +4,10 @@ import cloneDeep from "lodash/cloneDeep";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
+
 import RepoUrlInput from "./components/RepoUrlInput";
 import Header from "./components/Header";
-import Table from "react-bootstrap/Table";
-import CommitList from "./components/CommitList";
+import CommitList from "./components/CommitsTable/CommitList";
 
 const COMMITS_API = "http://localhost:8080/base_api_war_exploded/api/commits";
 

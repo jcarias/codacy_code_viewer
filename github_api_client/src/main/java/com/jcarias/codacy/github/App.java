@@ -11,8 +11,9 @@ import java.util.Collection;
 public class App {
 	public static void main(String[] args) throws MalformedURLException, IncorrectHostException, ConnectivityException {
 
-		URL url = new URL("https://github.com/jcarias/codacy_code_viewer.git");
-		Collection<CommitInfo> commitInfos = new GitHubApiClient(url).fetchRepoCommits();
+		//URL url = new URL("https://github.com/jcarias/codacy_code_viewer.git");
+		URL url = new URL("https://github.com/codacy/node-codacy-coverage.git");
+		Collection<CommitInfo> commitInfos = new GitHubApiClient(url, 10, null).fetchRepoCommits();
 
 		for (CommitInfo commitInfo : commitInfos) {
 			System.out.println(commitInfo.getSha());

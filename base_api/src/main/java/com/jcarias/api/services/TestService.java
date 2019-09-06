@@ -67,7 +67,7 @@ public class TestService {
 
 
 			//Fetch, Open or Clone repository to read commit list
-			Collection<CommitInfo> commits = fetchCommits(url);
+			Collection<CommitInfo> commits = fetchCommits(url, 10, null);
 
 			//TODO: Add method to update or clone the local repository
 			RepoCommitExtractor extractor = new RepoCommitExtractor(url);
@@ -102,9 +102,9 @@ public class TestService {
 		}
 	}
 
-	private Collection<CommitInfo> fetchCommits(String url) throws IOException, IncorrectHostException, GitAPIException {
+	private Collection<CommitInfo> fetchCommits(String url, int pageSize, String lastSha) throws IOException, IncorrectHostException, GitAPIException {
 		try {
-			return new GitHubApiClient(new URL(url)).fetchRepoCommits();
+			return new GitHubApiClient(new URL(url), pageSize, lastSha).fetchRepoCommits();
 		} catch (ConnectivityException e) {
 			return new RepoCommitExtractor(url).getCommits();
 		}
