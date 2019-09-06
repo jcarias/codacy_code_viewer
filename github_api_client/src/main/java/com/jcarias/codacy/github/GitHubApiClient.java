@@ -1,7 +1,9 @@
 package com.jcarias.codacy.github;
 
 
+import com.jcarias.codacy.github.helpers.GitGubRepoUrlParser;
 import com.jcarias.codacy.github.helpers.PersonParser;
+import com.jcarias.codacy.github.model.GitGubRepoParams;
 import com.jcarias.git.model.CommitInfo;
 import com.jcarias.git.model.Person;
 import org.glassfish.jersey.client.ClientProperties;
@@ -15,25 +17,19 @@ import javax.ws.rs.core.Response;
 import java.net.URL;
 import java.util.*;
 
-public class JerseyClientGet {
+public class GitHubApiClient {
 
 	private static final String API_ADDRESS = "https://api.github.com/repos";
-
-	private Map<String, String> processRepoURL(URL repoUrl) {
-		Map<String, String> parts = new HashMap<>();
-
-		String path = repoUrl.getFile();
-
-		return parts;
-	}
 
 	public Collection<CommitInfo> fetchRepoCommits(URL repoUrl) {
 		Client client = ClientBuilder.newClient();
 		client.property(ClientProperties.CONNECT_TIMEOUT, 1000);
 		client.property(ClientProperties.READ_TIMEOUT,    5000);
-		String owner = "jcarias";
-		String repository = "Trabalho-SSS-MEI-2015";
-		WebTarget webTarget = client.target("https://api.github.com/repos").path(owner).path(repository).path("commits");
+
+		GitGubRepoParams params = new GitGubRepoUrlParser().parse(repoUrl);
+		String owner = params.getOwner();
+		String repository = params.getRepository();
+		WebTarget webTarget = client.target(API_ADDRESS).path(owner).path(repository).path("commits");
 
 		Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 		Response response = invocationBuilder.get();
@@ -62,7 +58,7 @@ public class JerseyClientGet {
 
 
 	private CommitInfo parseCommit(String sha, LinkedHashMap commit) {
-		
+
 		LinkedHashMap authorMap = (LinkedHashMap) commit.get("author");
 		Person author = new PersonParser().parse(authorMap);
 
