@@ -5,12 +5,12 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import java.util.LinkedHashMap;
+import java.util.Map;
 
-public class PersonParser implements Parser<Person, LinkedHashMap> {
+public class PersonParser implements Parser<Person, Map> {
 
 	@Override
-	public Person parse(LinkedHashMap sourceObject) {
+	public Person parse(Map sourceObject) {
 		String name = (String) sourceObject.get("name");
 		String email = (String) sourceObject.get("email");
 		String dateString = (String) sourceObject.get("date");

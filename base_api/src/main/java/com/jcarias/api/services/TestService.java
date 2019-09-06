@@ -8,6 +8,8 @@ import com.jcarias.git.RepoCommitExtractor;
 import com.jcarias.git.converters.CommitsInfoToJsonArray;
 import com.jcarias.git.converters.Converter;
 import com.jcarias.git.model.CommitInfo;
+import com.jcarias.codacy.github.GitHubApiClient;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.json.JSONArray;
@@ -17,6 +19,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -62,9 +65,14 @@ public class TestService {
 
 		String url = commitsRequest.getUrl();
 		try {
+
+
 			//Open or Clone repository to read commit list
 			RepoCommitExtractor extractor = new RepoCommitExtractor(url);
-			Collection<CommitInfo> commits = extractor.getCommits();
+
+			Collection<CommitInfo> commits = new GitHubApiClient().fetchRepoCommits(new URL(url));
+
+			//Collection<CommitInfo> commits = extractor.getCommits();
 
 			//Partition of results into chunks
 			Partition<CommitInfo> commitInfoPartition = new Partition(new ArrayList(commits), commitsRequest.getPageSize());

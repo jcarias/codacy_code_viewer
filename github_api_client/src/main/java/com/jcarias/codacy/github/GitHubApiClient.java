@@ -43,10 +43,10 @@ public class GitHubApiClient {
 			ArrayList commitsArray = (ArrayList) responseEntity;
 
 			for (Object object : commitsArray) {
-				if (object instanceof LinkedHashMap) {
-					LinkedHashMap commitMap = (LinkedHashMap) object;
+				if (object instanceof Map) {
+					Map commitMap = (Map) object;
 					String sha = (String) commitMap.get("sha");
-					CommitInfo commit = parseCommit(sha, (LinkedHashMap) commitMap.get("commit"));
+					CommitInfo commit = parseCommit(sha, (Map) commitMap.get("commit"));
 					commits.add(commit);
 				}
 			}
@@ -56,12 +56,12 @@ public class GitHubApiClient {
 	}
 
 
-	private CommitInfo parseCommit(String sha, LinkedHashMap commit) {
+	private CommitInfo parseCommit(String sha, Map commit) {
 
-		LinkedHashMap authorMap = (LinkedHashMap) commit.get("author");
+		Map authorMap = (Map) commit.get("author");
 		Person author = new PersonParser().parse(authorMap);
 
-		LinkedHashMap committerMap = (LinkedHashMap) commit.get("committer");
+		Map committerMap = (Map) commit.get("committer");
 		Person committer = new PersonParser().parse(committerMap);
 
 		String message = (String) commit.get("message");
