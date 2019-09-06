@@ -1,6 +1,7 @@
 package com.jcarias.api.services;
 
 import com.jcarias.api.entities.CommitsRequest;
+import com.jcarias.api.entities.ErrorEntity;
 import com.jcarias.api.helpers.MalformedRequestSyntaxException;
 import com.jcarias.api.helpers.Partition;
 import com.jcarias.api.helpers.UncaughtException;

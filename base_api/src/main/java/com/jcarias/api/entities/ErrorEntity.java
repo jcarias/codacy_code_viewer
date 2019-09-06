@@ -1,4 +1,4 @@
-package com.jcarias.api.services;
+package com.jcarias.api.entities;
 
 public class ErrorEntity {
 	public String message;

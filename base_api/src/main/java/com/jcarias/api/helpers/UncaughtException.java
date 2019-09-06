@@ -1,7 +1,7 @@
 package com.jcarias.api.helpers;
 
 
-import com.jcarias.api.services.ErrorEntity;
+import com.jcarias.api.entities.ErrorEntity;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;

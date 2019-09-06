@@ -23,8 +23,6 @@ import java.util.Map;
 
 public class GitHubApiClient {
 
-	private static final String API_ADDRESS = "https://api.github.com/repos";
-
 	private URL repoUrl;
 	private GitGubRepoParams repoParams;
 
@@ -33,13 +31,19 @@ public class GitHubApiClient {
 		this.repoParams = new GitGubRepoUrlParser().parse(repoUrl);
 	}
 
+
 	public Collection<CommitInfo> fetchRepoCommits() throws ConnectivityException {
 		Collection<CommitInfo> commits = new ArrayList<>();
 
+		final String API_ADDRESS = "https://api.github.com/repos";
+		final int TIMEOUT_1S = 1000; // 1 second
+		final int TIMEOUT_5M = 300000; // 5 minutes
+
+
 		try {
 			Client client = ClientBuilder.newClient();
-			client.property(ClientProperties.CONNECT_TIMEOUT, 100);
-			client.property(ClientProperties.READ_TIMEOUT, 50);
+			client.property(ClientProperties.CONNECT_TIMEOUT, TIMEOUT_1S);
+			client.property(ClientProperties.READ_TIMEOUT, TIMEOUT_5M);
 			WebTarget webTarget = client.target(API_ADDRESS)
 					.path(this.repoParams.getOwner())
 					.path(this.repoParams.getRepository())
