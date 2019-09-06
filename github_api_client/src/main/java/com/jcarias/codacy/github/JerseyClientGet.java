@@ -1,7 +1,9 @@
 package com.jcarias.codacy.github;
 
 
+import com.jcarias.codacy.github.helpers.PersonParser;
 import com.jcarias.git.model.CommitInfo;
+import com.jcarias.git.model.Person;
 import org.glassfish.jersey.client.ClientProperties;
 
 import javax.ws.rs.client.Client;
@@ -20,7 +22,8 @@ public class JerseyClientGet {
 	private Map<String, String> processRepoURL(URL repoUrl) {
 		Map<String, String> parts = new HashMap<>();
 
-		String path = repoUrl.getPath();
+		String path = repoUrl.getFile();
+
 		return parts;
 	}
 
@@ -48,7 +51,7 @@ public class JerseyClientGet {
 					String sha = (String) commitMap.get("sha");
 					System.out.println(sha);
 
-					CommitInfo commit = parseCommit(sha, commitMap.get("commit"));
+					CommitInfo commit = parseCommit(sha, (LinkedHashMap) commitMap.get("commit"));
 					commits.add(commit);
 				}
 			}
@@ -58,8 +61,16 @@ public class JerseyClientGet {
 	}
 
 
-	private CommitInfo parseCommit(String sha, Object commit) {
-		//TODO: parse commit info data
-		return null;
+	private CommitInfo parseCommit(String sha, LinkedHashMap commit) {
+		
+		LinkedHashMap authorMap = (LinkedHashMap) commit.get("author");
+		Person author = new PersonParser().parse(authorMap);
+
+		LinkedHashMap committerMap = (LinkedHashMap) commit.get("committer");
+		Person committer = new PersonParser().parse(committerMap);
+
+		String message = (String) commit.get("message");
+
+		return new CommitInfo(sha, message, committer.getDate(), author, committer );
 	}
 }
