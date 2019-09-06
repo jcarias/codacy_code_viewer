@@ -4,12 +4,13 @@ import com.jcarias.api.entities.CommitsRequest;
 import com.jcarias.api.helpers.MalformedRequestSyntaxException;
 import com.jcarias.api.helpers.Partition;
 import com.jcarias.api.helpers.UncaughtException;
+import com.jcarias.codacy.github.GitHubApiClient;
+import com.jcarias.codacy.github.helpers.ConnectivityException;
+import com.jcarias.codacy.github.helpers.IncorrectHostException;
 import com.jcarias.git.RepoCommitExtractor;
 import com.jcarias.git.converters.CommitsInfoToJsonArray;
 import com.jcarias.git.converters.Converter;
 import com.jcarias.git.model.CommitInfo;
-import com.jcarias.codacy.github.GitHubApiClient;
-
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.json.JSONArray;
@@ -67,12 +68,12 @@ public class TestService {
 		try {
 
 
-			//Open or Clone repository to read commit list
+			//Fetch, Open or Clone repository to read commit list
+			Collection<CommitInfo> commits = fetchCommits(url);
+
+			//TODO: Add method to update or clone the local repository
 			RepoCommitExtractor extractor = new RepoCommitExtractor(url);
 
-			Collection<CommitInfo> commits = new GitHubApiClient().fetchRepoCommits(new URL(url));
-
-			//Collection<CommitInfo> commits = extractor.getCommits();
 
 			//Partition of results into chunks
 			Partition<CommitInfo> commitInfoPartition = new Partition(new ArrayList(commits), commitsRequest.getPageSize());
@@ -101,5 +102,14 @@ public class TestService {
 		} catch (Throwable t) {
 			return new UncaughtException().toResponse(t);
 		}
+	}
+
+	private Collection<CommitInfo> fetchCommits(String url) throws IOException, IncorrectHostException, GitAPIException {
+		try {
+			return new GitHubApiClient(new URL(url)).fetchRepoCommits();
+		} catch (ConnectivityException e) {
+			return new RepoCommitExtractor(url).getCommits();
+		}
+
 	}
 }

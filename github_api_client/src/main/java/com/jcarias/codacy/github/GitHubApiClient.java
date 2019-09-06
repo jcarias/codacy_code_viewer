@@ -1,6 +1,7 @@
 package com.jcarias.codacy.github;
 
 
+import com.jcarias.codacy.github.helpers.ConnectivityException;
 import com.jcarias.codacy.github.helpers.GitGubRepoUrlParser;
 import com.jcarias.codacy.github.helpers.IncorrectHostException;
 import com.jcarias.codacy.github.helpers.PersonParser;
@@ -16,42 +17,53 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
 
 public class GitHubApiClient {
 
 	private static final String API_ADDRESS = "https://api.github.com/repos";
 
-	public Collection<CommitInfo> fetchRepoCommits(URL repoUrl) throws IncorrectHostException {
-		Client client = ClientBuilder.newClient();
-		client.property(ClientProperties.CONNECT_TIMEOUT, 1000);
-		client.property(ClientProperties.READ_TIMEOUT,    5000);
+	private URL repoUrl;
+	private GitGubRepoParams repoParams;
 
-		GitGubRepoParams params = new GitGubRepoUrlParser().parse(repoUrl);
-		String owner = params.getOwner();
-		String repository = params.getRepository();
-		WebTarget webTarget = client.target(API_ADDRESS).path(owner).path(repository).path("commits");
+	public GitHubApiClient(URL repoUrl) throws IncorrectHostException {
+		this.repoUrl = repoUrl;
+		this.repoParams = new GitGubRepoUrlParser().parse(repoUrl);
+	}
 
-		Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
-		Response response = invocationBuilder.get();
-		System.out.println(response.getStatus());
-		Object responseEntity = response.readEntity(Object.class);
-
+	public Collection<CommitInfo> fetchRepoCommits() throws ConnectivityException {
 		Collection<CommitInfo> commits = new ArrayList<>();
 
-		if (responseEntity instanceof ArrayList) {
-			ArrayList commitsArray = (ArrayList) responseEntity;
+		try {
+			Client client = ClientBuilder.newClient();
+			client.property(ClientProperties.CONNECT_TIMEOUT, 100);
+			client.property(ClientProperties.READ_TIMEOUT, 50);
+			WebTarget webTarget = client.target(API_ADDRESS)
+					.path(this.repoParams.getOwner())
+					.path(this.repoParams.getRepository())
+					.path("commits");
 
-			for (Object object : commitsArray) {
-				if (object instanceof Map) {
-					Map commitMap = (Map) object;
-					String sha = (String) commitMap.get("sha");
-					CommitInfo commit = parseCommit(sha, (Map) commitMap.get("commit"));
-					commits.add(commit);
+			Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
+			Response response = invocationBuilder.get();
+			Object responseEntity = response.readEntity(Object.class);
+
+			if (responseEntity instanceof ArrayList) {
+				ArrayList commitsArray = (ArrayList) responseEntity;
+
+				for (Object object : commitsArray) {
+					if (object instanceof Map) {
+						Map commitMap = (Map) object;
+						String sha = (String) commitMap.get("sha");
+						CommitInfo commit = parseCommit(sha, (Map) commitMap.get("commit"));
+						commits.add(commit);
+					}
 				}
 			}
+		} catch (Exception stEx) {
+			throw new ConnectivityException(stEx.getMessage());
 		}
-
 		return commits;
 	}
 
@@ -66,6 +78,6 @@ public class GitHubApiClient {
 
 		String message = (String) commit.get("message");
 
-		return new CommitInfo(sha, message, committer.getDate(), author, committer );
+		return new CommitInfo(sha, message, committer.getDate(), author, committer);
 	}
 }

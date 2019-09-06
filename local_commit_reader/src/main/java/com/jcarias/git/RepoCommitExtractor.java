@@ -56,8 +56,16 @@ public class RepoCommitExtractor {
 	}
 
 	private Repository openLocalRepo() throws IOException {
+
 		File localRepoDir = new File(this.repoDir + File.separator + ".git");
 		Git git = Git.open(localRepoDir);
+
+		try {
+			git.pull().call();
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+
 		return git.getRepository();
 	}
 

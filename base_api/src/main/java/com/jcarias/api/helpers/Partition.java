@@ -33,6 +33,6 @@ public final class Partition<T> extends AbstractList<List<T>> {
 
 	@Override
 	public int size() {
-		return (int) Math.ceil((double) list.size() / (double) chunkSize);
+		return (int) Math.floor((double) list.size() / (double) chunkSize);
 	}
 }
