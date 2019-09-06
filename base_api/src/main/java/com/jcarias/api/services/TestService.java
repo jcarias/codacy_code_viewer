@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+
 @Path("/commits")
 public class TestService {
 
@@ -34,22 +36,17 @@ public class TestService {
 
 		RepoCommitExtractor extractor = null;
 		try {
-			extractor = new RepoCommitExtractor("https://github.com/naveenvemulapalli/test-jersey-rest-maven-tomcat.git");
+			extractor = new RepoCommitExtractor("https://github.com/naveenvemulapalli/");
 			Collection<CommitInfo> commits = extractor.getCommits();
 			Converter<Collection<CommitInfo>, JSONArray> converter = new CommitsInfoToJsonArray();
 			JSONArray jsonArray = converter.convert(commits);
 
 			return Response.ok(jsonArray.toString()).build();
 
-		} catch (IOException e) {
-
-			return Response.status(501).entity(e.getMessage())
-					.type("text/plain").build();
-		} catch (GitAPIException e) {
-			Response.serverError().build();
-
-			return Response.status(502).entity(e.getMessage())
-					.type("text/plain").build();
+		} catch (IOException | GitAPIException e) {
+			ErrorEntity errorEntity = new ErrorEntity(e.getMessage(), INTERNAL_SERVER_ERROR.getStatusCode());
+			return Response.serverError().entity(errorEntity)
+					.type(MediaType.APPLICATION_JSON).build();
 		} catch (Throwable t) {
 			throw new UncaughtException();
 		}
