@@ -6,5 +6,5 @@ package com.jcarias.codacy.github.helpers;
  * @param <S> Source Type
  */
 public interface Parser<T, S>  {
-	public T parse(S sourceObject);
+	public T parse(S sourceObject) throws Exception;
 }

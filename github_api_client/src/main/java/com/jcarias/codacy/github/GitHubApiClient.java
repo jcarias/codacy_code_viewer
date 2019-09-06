@@ -2,6 +2,7 @@ package com.jcarias.codacy.github;
 
 
 import com.jcarias.codacy.github.helpers.GitGubRepoUrlParser;
+import com.jcarias.codacy.github.helpers.IncorrectHostException;
 import com.jcarias.codacy.github.helpers.PersonParser;
 import com.jcarias.codacy.github.model.GitGubRepoParams;
 import com.jcarias.git.model.CommitInfo;
@@ -21,7 +22,7 @@ public class GitHubApiClient {
 
 	private static final String API_ADDRESS = "https://api.github.com/repos";
 
-	public Collection<CommitInfo> fetchRepoCommits(URL repoUrl) {
+	public Collection<CommitInfo> fetchRepoCommits(URL repoUrl) throws IncorrectHostException {
 		Client client = ClientBuilder.newClient();
 		client.property(ClientProperties.CONNECT_TIMEOUT, 1000);
 		client.property(ClientProperties.READ_TIMEOUT,    5000);
@@ -41,12 +42,10 @@ public class GitHubApiClient {
 		if (responseEntity instanceof ArrayList) {
 			ArrayList commitsArray = (ArrayList) responseEntity;
 
-			for (Object o : commitsArray) {
-				if (o instanceof LinkedHashMap) {
-					LinkedHashMap commitMap = (LinkedHashMap) o;
+			for (Object object : commitsArray) {
+				if (object instanceof LinkedHashMap) {
+					LinkedHashMap commitMap = (LinkedHashMap) object;
 					String sha = (String) commitMap.get("sha");
-					System.out.println(sha);
-
 					CommitInfo commit = parseCommit(sha, (LinkedHashMap) commitMap.get("commit"));
 					commits.add(commit);
 				}
