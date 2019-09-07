@@ -8,6 +8,7 @@ import org.apache.commons.validator.routines.UrlValidator;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -24,6 +25,9 @@ public class RepoCommitExtractor {
 	private File repoDir;
 	private Repository repository;
 	private Collection<CommitInfo> commits;
+
+	int pageSize;
+	private String lastSha;
 
 
 	/**
@@ -46,6 +50,12 @@ public class RepoCommitExtractor {
 		} else {
 			throw new MalformedURLException(String.format("repoURL '%s' is not a valid URL", repoURL));
 		}
+	}
+
+	public RepoCommitExtractor(String repoURL, int pageSize, String lastSha) throws IOException, GitAPIException {
+		this(repoURL);
+		this.pageSize = pageSize;
+		this.lastSha = lastSha;
 	}
 
 	public Collection<CommitInfo> getCommits() throws IOException {
@@ -85,8 +95,14 @@ public class RepoCommitExtractor {
 		Ref head = repository.exactRef("refs/heads/master");
 
 		try (RevWalk walk = new RevWalk(repository)) {
-			RevCommit firstCommit = walk.parseCommit(head.getObjectId());
+
+			ObjectId objectId = head.getObjectId();
+			if (this.lastSha != null)
+				objectId = repository.resolve(this.lastSha);
+
+			RevCommit firstCommit = walk.parseCommit(objectId);
 			walk.markStart(firstCommit);
+
 
 			for (RevCommit commit : walk) {
 				Person committer = new PersonJGit(commit.getCommitterIdent());
@@ -101,6 +117,9 @@ public class RepoCommitExtractor {
 				);
 
 				commits.add(commitInfo);
+
+				if(commits.size() == this.pageSize)
+					break;
 			}
 
 			walk.dispose();

@@ -63,13 +63,11 @@ public class TestService {
 		String url = commitsRequest.getUrl();
 		try {
 
-
 			//Fetch, Open or Clone repository to read commit list
 			Collection<CommitInfo> commits = fetchCommits(url, commitsRequest.getPageSize(), commitsRequest.getLastCommitSha());
 
 			//TODO: Add method to update or clone the local repository
 			RepoCommitExtractor extractor = new RepoCommitExtractor(url);
-
 
 			//Conversion of the files
 			Converter<Collection<CommitInfo>, JSONArray> converter = new CommitsInfoToJsonArray();
@@ -107,8 +105,7 @@ public class TestService {
 		try {
 			return new GitHubApiClient(new URL(url), pageSize, lastSha).fetchRepoCommits();
 		} catch (ConnectivityException e) {
-			return new RepoCommitExtractor(url).getCommits();
+			return new RepoCommitExtractor(url, pageSize, lastSha).getCommits();
 		}
-
 	}
 }
