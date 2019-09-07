@@ -3,7 +3,7 @@ import Table from "react-bootstrap/Table";
 import "./CommitList.css";
 import Avatar from "../avatar/Avatar";
 
-const CommitList = ({ commits, isLoading, totalCommits }) => {
+const CommitList = ({ commits, isLoading }) => {
   return (
     <Table className="mt-3" responsive>
       <thead>
@@ -48,11 +48,11 @@ const CommitList = ({ commits, isLoading, totalCommits }) => {
       </tbody>
       <tfoot>
         <tr>
-          <td colSpan="5">{`Showing ${commits.length} of ${totalCommits}`}</td>
+          <td colSpan="5">{`${commits.length} loaded so far. `}</td>
         </tr>
         {isLoading && (
           <tr>
-            <td colSpan="5">Loading...</td>
+            <td colSpan="5">Loading more...</td>
           </tr>
         )}
       </tfoot>

@@ -15,13 +15,13 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      pageIndex: 0,
+      lastSha: null,
       pageSize: 50,
       repoUrl: "",
+
       commits: [],
-      thePosition: 0,
       isLoading: false,
-      itemsTotal: 0
+      hasMore: true
     };
   }
 
@@ -41,19 +41,8 @@ class App extends Component {
       document.documentElement.clientHeight;
     const scrolled = winScroll / height;
 
-    if (
-      scrolled > 0.8 &&
-      !this.state.isLoading &&
-      this.state.commits.length < this.state.itemsTotal
-    ) {
-      this.setState(
-        prevState => {
-          return { pageIndex: prevState.pageIndex + 1 };
-        },
-        () => {
-          this.fetchCommits();
-        }
-      );
+    if (scrolled > 0.8 && !this.state.isLoading && this.state.hasMore) {
+      this.fetchCommits();
     }
   };
 
@@ -63,7 +52,7 @@ class App extends Component {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        page: this.state.pageIndex,
+        lastCommitSha: this.state.lastSha,
         pageSize: this.state.pageSize,
         url: this.state.repoUrl
       })
@@ -75,12 +64,13 @@ class App extends Component {
         this.setState({
           isLoading: false,
           commits: [...existingCommits, ...data.commits],
-          itemsTotal: data.totalCommits
+          lastSha: data.lastCommitSha,
+          hasMore: data.commits.length > 0
         });
       })
       .catch(error => {
         console.error(error);
-        this.setState({ isLoading: false });
+        this.setState({ isLoading: false, hasMore: false });
       });
   };
 
@@ -88,9 +78,9 @@ class App extends Component {
     this.setState(
       {
         repoUrl: newRepoUrl,
-        pageIndex: 0,
+        lastSha: null,
         commits: [],
-        itemsTotal: 0
+        hasMore: true
       },
       () => this.fetchCommits()
     );
@@ -115,7 +105,6 @@ class App extends Component {
                     <CommitList
                       commits={this.state.commits}
                       isLoading={this.state.isLoading}
-                      totalCommits={this.state.itemsTotal}
                     ></CommitList>
                   </Col>
                 </Row>

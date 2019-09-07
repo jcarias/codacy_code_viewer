@@ -66,7 +66,7 @@ public class TestService {
 			//Fetch, Open or Clone repository to read commit list
 			Collection<CommitInfo> commits = fetchCommits(url, commitsRequest.getPageSize(), commitsRequest.getLastCommitSha());
 
-			//TODO: Add method to update or clone the local repository
+			//TODO: Add method to update(pull) or clone the local repository
 			RepoCommitExtractor extractor = new RepoCommitExtractor(url);
 
 			//Conversion of the files
@@ -88,6 +88,7 @@ public class TestService {
 			return Response.status(502).entity(e.getMessage())
 					.type("text/plain").build();
 		} catch (Throwable t) {
+			t.printStackTrace();
 			return new UncaughtException().toResponse(t);
 		}
 	}
