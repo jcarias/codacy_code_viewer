@@ -1,0 +1,9 @@
+.side-menu-root {
+  background: #edf5fc;
+  border-right: 1px solid #dbe6ec;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  align-items: baseline;
+  justify-content: center;
+}
