@@ -60,12 +60,16 @@ class App extends Component {
       .then(response => response.json())
       .then(data => {
         let existingCommits = cloneDeep(this.state.commits);
+        const hasMoreCommits = this.state.lastSha !== data.lastCommitSha;
+        const newCommits = hasMoreCommits
+          ? [...existingCommits, ...data.commits]
+          : existingCommits;
 
         this.setState({
           isLoading: false,
-          commits: [...existingCommits, ...data.commits],
+          commits: newCommits,
           lastSha: data.lastCommitSha,
-          hasMore: data.commits.length > 0
+          hasMore: hasMoreCommits
         });
       })
       .catch(error => {
