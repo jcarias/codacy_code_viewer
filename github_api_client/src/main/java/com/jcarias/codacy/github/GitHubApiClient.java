@@ -31,8 +31,8 @@ public class GitHubApiClient {
 	public GitHubApiClient(URL repoUrl, int pageSize, String lastSha) throws IncorrectHostException {
 		this.repoUrl = repoUrl;
 		this.repoParams = new GitGubRepoUrlParser().parse(repoUrl);
-		this.pageSize=pageSize;
-		this.lastSha=lastSha;
+		this.pageSize = pageSize;
+		this.lastSha = lastSha;
 	}
 
 
@@ -57,6 +57,11 @@ public class GitHubApiClient {
 
 			Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 			Response response = invocationBuilder.get();
+
+			if (response.getStatus() != Response.Status.OK.getStatusCode()) {
+				throw new ConnectivityException(response.getStatusInfo().getReasonPhrase());
+			}
+
 			Object responseEntity = response.readEntity(Object.class);
 
 			if (responseEntity instanceof ArrayList) {
@@ -98,6 +103,6 @@ public class GitHubApiClient {
 
 		String message = (String) commit.get("message");
 
-		return new CommitInfo(sha, message, committer.getDate(), author, committer);
+		return new CommitInfo(sha, message, committer.getDate().getTime(), author, committer);
 	}
 }

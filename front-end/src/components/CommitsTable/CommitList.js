@@ -1,23 +1,38 @@
 import React from "react";
+import TimeAgo from "javascript-time-ago";
+import en from "javascript-time-ago/locale/en";
+
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Table from "react-bootstrap/Table";
+import Tooltip from "react-bootstrap/Tooltip";
+
 import "./CommitList.css";
 import Avatar from "../avatar/Avatar";
 
-const CommitList = ({ commits, isLoading }) => {
+const getTimeAgo = (timeAgo, dateString) => {
+  const date = new Date(dateString);
+  return timeAgo.format(date);
+};
+
+const CommitList = ({ commits, isLoading, pageSize }) => {
+  TimeAgo.addLocale(en);
+  const timeAgo = new TimeAgo();
+
+  // Add locale-specific relative date/time formatting rules.
   return (
-    <Table responsive>
+    <Table responsive hover striped>
       <thead>
         <tr>
-          <th colSpan="2">
+          <th width="25%">
             <span className="header text-secondary">Author</span>
           </th>
-          <th>
+          <th width="5%">
             <span className="header text-secondary">Commit</span>
           </th>
-          <th>
+          <th width="60%">
             <span className="header text-secondary">Message</span>
           </th>
-          <th>
+          <th width="10%">
             <span className="header text-secondary">Created</span>
           </th>
         </tr>
@@ -25,37 +40,39 @@ const CommitList = ({ commits, isLoading }) => {
       <tbody>
         {commits.map((commit, key) => (
           <tr key={key}>
-            <td className="avatar-column">
+            <th>
               <Avatar
                 url={commit.committer.avatarUrl}
                 name={commit.committer.name}
               />
-            </td>
-            <th className="ellipsis ">
-              <span>{commit.committer.name}</span>
             </th>
+
             <td className="ellipsis">
-              <span>{commit.sha}</span>
+              <span>{commit.sha.substring(0, 7)}</span>
             </td>
             <td className="ellipsis">
               <span>{commit.message}</span>
             </td>
             <td className="ellipsis">
-              <span>{commit.date}</span>
+              <OverlayTrigger
+                placement="top"
+                overlay={
+                  <Tooltip id={`tooltip-commit-date-${commit.sha}`}>
+                    {new Date(commit.date).toISOString()}
+                  </Tooltip>
+                }
+              >
+                <span>{getTimeAgo(timeAgo, commit.date)}</span>
+              </OverlayTrigger>
             </td>
           </tr>
         ))}
-      </tbody>
-      <tfoot>
-        <tr>
-          <td colSpan="5">{`${commits.length} loaded so far. `}</td>
-        </tr>
         {isLoading && (
           <tr>
-            <td colSpan="5">Loading more...</td>
+            <td colSpan="4">{`${commits.length} loaded so far... Loading next ${pageSize} `}</td>
           </tr>
         )}
-      </tfoot>
+      </tbody>
     </Table>
   );
 };

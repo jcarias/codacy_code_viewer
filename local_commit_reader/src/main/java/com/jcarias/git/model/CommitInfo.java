@@ -1,18 +1,16 @@
 package com.jcarias.git.model;
 
-import java.util.Date;
-
 /**
  * Entity class to store commit information
  */
 public class CommitInfo {
 	private String sha;
 	private String message;
-	private Date date;
+	private Long date;
 	private Person author;
 	private Person committer;
 
-	public CommitInfo(String sha, String message, Date date, Person author, Person committer) {
+	public CommitInfo(String sha, String message, Long date, Person author, Person committer) {
 		this.sha = sha;
 		this.message = message;
 		this.date = date;
@@ -28,7 +26,7 @@ public class CommitInfo {
 		return message;
 	}
 
-	public Date getDate() {
+	public Long getDate() {
 		return date;
 	}
 

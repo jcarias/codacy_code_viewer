@@ -11,6 +11,7 @@ import com.jcarias.git.RepoCommitExtractor;
 import com.jcarias.git.converters.CommitsInfoToJsonArray;
 import com.jcarias.git.converters.Converter;
 import com.jcarias.git.model.CommitInfo;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.json.JSONArray;
@@ -84,7 +85,6 @@ public class TestService {
 			return Response.status(501).entity(e.getMessage())
 					.type("text/plain").build();
 		} catch (GitAPIException e) {
-			Response.serverError().build();
 			return Response.status(502).entity(e.getMessage())
 					.type("text/plain").build();
 		} catch (Throwable t) {
@@ -94,6 +94,9 @@ public class TestService {
 	}
 
 	private String findLastCommitSha(Collection<CommitInfo> commits) {
+		if(CollectionUtils.isEmpty(commits))
+			return null;
+
 		final Iterator<CommitInfo> itr = commits.iterator();
 		CommitInfo lastElement = itr.next();
 		while (itr.hasNext()) {

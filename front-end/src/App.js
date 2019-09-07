@@ -8,6 +8,10 @@ import Row from "react-bootstrap/Row";
 import RepoUrlInput from "./components/RepoUrlInput";
 import Header from "./components/Header";
 import CommitList from "./components/CommitsTable/CommitList";
+import SideMenu from "./components/SideMenu/SideMenu";
+
+import "./App.css";
+import AlertModal from "./components/AlertModal/AlertModal";
 
 const COMMITS_API = "http://localhost:8080/base_api_war_exploded/api/commits";
 
@@ -21,7 +25,11 @@ class App extends Component {
 
       commits: [],
       isLoading: false,
-      hasMore: true
+      hasMore: true,
+      showModal: false,
+      modalMessage: "",
+      modalTitle: "",
+      errorCode: null
     };
   }
 
@@ -57,7 +65,21 @@ class App extends Component {
         url: this.state.repoUrl
       })
     })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          response.json().then(error => {
+            this.setState({
+              showModal: true,
+              modalMessage: error.message,
+              modalTitle: `Something went wrong...`,
+              errorCode: error.statusCode
+            });
+          });
+          throw Error(response.statusText);
+        } else {
+          return response.json();
+        }
+      })
       .then(data => {
         let existingCommits = cloneDeep(this.state.commits);
         const hasMoreCommits = this.state.lastSha !== data.lastCommitSha;
@@ -73,8 +95,10 @@ class App extends Component {
         });
       })
       .catch(error => {
-        console.error(error);
-        this.setState({ isLoading: false, hasMore: false });
+        this.setState({
+          isLoading: false,
+          hasMore: false
+        });
       });
   };
 
@@ -90,37 +114,57 @@ class App extends Component {
     );
   };
 
+  hideModal = () => {
+    this.setState({ showModal: false });
+  };
+
   render() {
     return (
       <React.Fragment>
+        <AlertModal
+          show={this.state.showModal}
+          onHide={this.hideModal}
+          title={this.state.modalTitle}
+        >
+          <p class="text-body">{this.state.modalMessage}</p>
+          <small class="text-muted">
+            {`Error Code: ${this.state.errorCode}`}
+          </small>
+        </AlertModal>
         <Header />
-        <Container fluid>
-          <Row>
-            <Col xs="1">Menu</Col>
-            <Col xs>
-              <Container fluid>
-                <Row>
-                  <Col xs>
-                    <RepoUrlInput onLoadClicked={this.handleLoadClicked} />
-                  </Col>
-                </Row>
-                <Row>
-                  <Col xs>
-                    <h4 className="mt-4">Commits</h4>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col xs>
-                    <CommitList
-                      commits={this.state.commits}
-                      isLoading={this.state.isLoading}
-                    ></CommitList>
-                  </Col>
-                </Row>
-              </Container>
-            </Col>
-          </Row>
-        </Container>
+        <div className="app-root-container">
+          <div>
+            <SideMenu />
+          </div>
+
+          <Container fluid>
+            <Row>
+              <Col xs>
+                <Container fluid>
+                  <Row>
+                    <Col xs>
+                      <RepoUrlInput onLoadClicked={this.handleLoadClicked} />
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col xs>
+                      <h4 className="mt-4">Commits</h4>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col xs>
+                      <CommitList
+                        commits={this.state.commits}
+                        isLoading={this.state.isLoading}
+                        pageSize={this.state.pageSize}
+                      ></CommitList>
+                    </Col>
+                  </Row>
+                </Container>
+              </Col>
+            </Row>
+          </Container>
+        </div>
       </React.Fragment>
     );
   }

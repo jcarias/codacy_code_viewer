@@ -111,7 +111,7 @@ public class RepoCommitExtractor {
 				CommitInfo commitInfo = new CommitInfo(
 						commit.getId().getName(),
 						commit.getShortMessage(),
-						commit.getCommitterIdent().getWhen(),
+						commit.getCommitterIdent().getWhen().getTime(),
 						committer,
 						author
 				);
