@@ -52,11 +52,8 @@ public class GitHubApiClient {
 					.path(this.repoParams.getOwner())
 					.path(this.repoParams.getRepository())
 					.path("commits")
-					.queryParam("per_page", this.pageSize);
-
-			if(this.lastSha!=null){
-				webTarget.queryParam("sha", this.lastSha);
-			}
+					.queryParam("per_page", this.pageSize)
+					.queryParam("sha", this.lastSha);
 
 			Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 			Response response = invocationBuilder.get();

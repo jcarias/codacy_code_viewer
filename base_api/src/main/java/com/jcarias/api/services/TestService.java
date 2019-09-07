@@ -3,7 +3,6 @@ package com.jcarias.api.services;
 import com.jcarias.api.entities.CommitsRequest;
 import com.jcarias.api.entities.ErrorEntity;
 import com.jcarias.api.helpers.MalformedRequestSyntaxException;
-import com.jcarias.api.helpers.Partition;
 import com.jcarias.api.helpers.UncaughtException;
 import com.jcarias.codacy.github.GitHubApiClient;
 import com.jcarias.codacy.github.helpers.ConnectivityException;
@@ -22,9 +21,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Iterator;
 
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
@@ -67,24 +65,18 @@ public class TestService {
 
 
 			//Fetch, Open or Clone repository to read commit list
-			Collection<CommitInfo> commits = fetchCommits(url, 10, null);
+			Collection<CommitInfo> commits = fetchCommits(url, commitsRequest.getPageSize(), commitsRequest.getLastCommitSha());
 
 			//TODO: Add method to update or clone the local repository
 			RepoCommitExtractor extractor = new RepoCommitExtractor(url);
 
 
-			//Partition of results into chunks
-			Partition<CommitInfo> commitInfoPartition = new Partition(new ArrayList(commits), commitsRequest.getPageSize());
-			List<CommitInfo> commitsPage = commitInfoPartition.get(commitsRequest.getPage());
-
 			//Conversion of the files
 			Converter<Collection<CommitInfo>, JSONArray> converter = new CommitsInfoToJsonArray();
-			JSONArray jsonArray = converter.convert(commitsPage);
+			JSONArray jsonArray = converter.convert(commits);
 
 			JSONObject responseData = new JSONObject();
-			responseData.put("page", commitsRequest.getPage());
-			responseData.put("totalCommits", commits.size());
-			responseData.put("totalPages", commitInfoPartition.size());
+			responseData.put("lastCommitSha", findLastCommitSha(commits));
 			responseData.put("pageSize", commitsRequest.getPageSize());
 			responseData.put("commits", jsonArray);
 
@@ -100,6 +92,15 @@ public class TestService {
 		} catch (Throwable t) {
 			return new UncaughtException().toResponse(t);
 		}
+	}
+
+	private String findLastCommitSha(Collection<CommitInfo> commits) {
+		final Iterator<CommitInfo> itr = commits.iterator();
+		CommitInfo lastElement = itr.next();
+		while (itr.hasNext()) {
+			lastElement = itr.next();
+		}
+		return lastElement.getSha();
 	}
 
 	private Collection<CommitInfo> fetchCommits(String url, int pageSize, String lastSha) throws IOException, IncorrectHostException, GitAPIException {

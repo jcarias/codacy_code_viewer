@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class CommitsRequest implements Serializable {
 
 	private String url;
-	private int page;
+	private String lastCommitSha;
 	private int pageSize;
 
 	public String getUrl() {
@@ -16,12 +16,12 @@ public class CommitsRequest implements Serializable {
 		this.url = url;
 	}
 
-	public int getPage() {
-		return page;
+	public String getLastCommitSha() {
+		return lastCommitSha;
 	}
 
-	public void setPage(int page) {
-		this.page = page;
+	public void setLastCommitSha(String lastCommitSha) {
+		this.lastCommitSha = lastCommitSha;
 	}
 
 	public int getPageSize() {
