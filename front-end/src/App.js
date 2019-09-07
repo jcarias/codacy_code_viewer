@@ -102,6 +102,11 @@ class App extends Component {
                 </Row>
                 <Row>
                   <Col xs>
+                    <h4 className="mt-4">Commits</h4>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col xs>
                     <CommitList
                       commits={this.state.commits}
                       isLoading={this.state.isLoading}

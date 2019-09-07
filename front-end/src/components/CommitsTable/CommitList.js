@@ -5,7 +5,7 @@ import Avatar from "../avatar/Avatar";
 
 const CommitList = ({ commits, isLoading }) => {
   return (
-    <Table className="mt-3" responsive>
+    <Table responsive>
       <thead>
         <tr>
           <th colSpan="2">
