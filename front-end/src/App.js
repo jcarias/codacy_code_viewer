@@ -20,7 +20,7 @@ class App extends Component {
     super(props);
     this.state = {
       lastSha: null,
-      pageSize: 50,
+      pageSize: 20,
       repoUrl: "",
 
       commits: [],
@@ -126,8 +126,8 @@ class App extends Component {
           onHide={this.hideModal}
           title={this.state.modalTitle}
         >
-          <p class="text-body">{this.state.modalMessage}</p>
-          <small class="text-muted">
+          <p className="text-body">{this.state.modalMessage}</p>
+          <small className="text-muted">
             {`Error Code: ${this.state.errorCode}`}
           </small>
         </AlertModal>
@@ -142,13 +142,13 @@ class App extends Component {
               <Col xs>
                 <Container fluid>
                   <Row>
-                    <Col xs>
+                    <Col xs className="mt-5">
                       <RepoUrlInput onLoadClicked={this.handleLoadClicked} />
                     </Col>
                   </Row>
                   <Row>
                     <Col xs>
-                      <h4 className="mt-4">Commits</h4>
+                      <h4 className="mt-5">Commits</h4>
                     </Col>
                   </Row>
                   <Row>

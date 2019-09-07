@@ -20,7 +20,6 @@ class RepoUrlInput extends Component {
           e.preventDefault();
           return this.props.onLoadClicked(this.state.repoUrl);
         }}
-        className="mt-4"
       >
         <Form.Row>
           <Col>

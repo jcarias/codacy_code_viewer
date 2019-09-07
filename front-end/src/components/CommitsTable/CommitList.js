@@ -20,7 +20,7 @@ const CommitList = ({ commits, isLoading, pageSize }) => {
 
   // Add locale-specific relative date/time formatting rules.
   return (
-    <Table responsive hover striped>
+    <Table responsive hover>
       <thead>
         <tr>
           <th width="25%">

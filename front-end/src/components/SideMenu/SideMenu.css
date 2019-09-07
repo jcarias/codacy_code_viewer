@@ -7,3 +7,11 @@
   align-items: baseline;
   justify-content: center;
 }
+
+svg {
+  width: 70px;
+  height: 70px;
+}
+svg:hover {
+  fill: red;
+}
