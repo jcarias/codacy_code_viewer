@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Codacy Commit Viewer App</title>
+</head>
+<body>
+<h1>App is running.</h1>
+API available at <code id="hostname"></code>
+<script type="text/javascript">
+	var hostSpan = document.getElementById("hostname");
+	if (hostSpan) {
+		hostSpan.innerText = window.location.href+"api/commits";
+	}
+</script>
+</body>
+</html>

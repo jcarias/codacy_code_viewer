@@ -30,6 +30,8 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 @Path("/commits")
 public class TestService {
 
+	private static final int DEFAULT_PAGE_SIZE =30;
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getTestService() throws UncaughtException {
@@ -61,11 +63,16 @@ public class TestService {
 			throw new MalformedRequestSyntaxException("No repo URL was found in the request");
 		}
 
+		int pageSize = commitsRequest.getPageSize();
+		if(pageSize < 1 ){
+			pageSize = DEFAULT_PAGE_SIZE;
+		}
+
 		String url = commitsRequest.getUrl();
 		try {
 
 			//Fetch, Open or Clone repository to read commit list
-			Collection<CommitInfo> commits = fetchCommits(url, commitsRequest.getPageSize(), commitsRequest.getLastCommitSha());
+			Collection<CommitInfo> commits = fetchCommits(url, pageSize, commitsRequest.getLastCommitSha());
 
 			//TODO: Add method to update(pull) or clone the local repository on a separate thread
 			RepoCommitExtractor extractor = new RepoCommitExtractor(url);
@@ -76,7 +83,7 @@ public class TestService {
 
 			JSONObject responseData = new JSONObject();
 			responseData.put("lastCommitSha", findLastCommitSha(commits));
-			responseData.put("pageSize", commitsRequest.getPageSize());
+			responseData.put("pageSize", pageSize);
 			responseData.put("commits", jsonArray);
 
 			return Response.ok(responseData.toString()).build();
