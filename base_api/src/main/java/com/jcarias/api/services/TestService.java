@@ -67,7 +67,7 @@ public class TestService {
 			//Fetch, Open or Clone repository to read commit list
 			Collection<CommitInfo> commits = fetchCommits(url, commitsRequest.getPageSize(), commitsRequest.getLastCommitSha());
 
-			//TODO: Add method to update(pull) or clone the local repository
+			//TODO: Add method to update(pull) or clone the local repository on a separate thread
 			RepoCommitExtractor extractor = new RepoCommitExtractor(url);
 
 			//Conversion of the files

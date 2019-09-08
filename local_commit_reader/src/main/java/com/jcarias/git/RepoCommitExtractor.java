@@ -13,6 +13,7 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +39,7 @@ public class RepoCommitExtractor {
 	public RepoCommitExtractor(String repoURL) throws IOException, GitAPIException {
 		if (new UrlValidator().isValid(repoURL)) {
 			this.repoURL = repoURL;
-			this.repoDir = new File(String.format("%s%d%s", File.separator, repoURL.hashCode(), File.separator));
+			this.repoDir = new File(buildRepoDirName(repoURL));
 			this.commits = new ArrayList<>();
 
 			try {
@@ -50,6 +51,15 @@ public class RepoCommitExtractor {
 		} else {
 			throw new MalformedURLException(String.format("repoURL '%s' is not a valid URL", repoURL));
 		}
+	}
+
+	private static String buildRepoDirName(String repoURL){
+		String baseDir = System.getenv("CCV_REPO_DIR");
+		if(StringUtils.isEmptyOrNull(baseDir)){
+			baseDir = System.getProperty("user.dir");
+		}
+
+		return String.format("%s%s%s", baseDir, File.separator, repoURL.hashCode(), File.separator);
 	}
 
 	public RepoCommitExtractor(String repoURL, int pageSize, String lastSha) throws IOException, GitAPIException {
