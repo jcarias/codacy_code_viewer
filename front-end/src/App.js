@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import cloneDeep from "lodash/cloneDeep";
+import isEmpty from "lodash/isEmpty";
 
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
@@ -49,7 +50,12 @@ class App extends Component {
       document.documentElement.clientHeight;
     const scrolled = winScroll / height;
 
-    if (scrolled > 0.8 && !this.state.isLoading && this.state.hasMore) {
+    if (
+      scrolled > 0.8 &&
+      !this.state.isLoading &&
+      this.state.hasMore &&
+      !isEmpty(this.state.repoUrl)
+    ) {
       this.fetchCommits();
     }
   };
@@ -149,15 +155,21 @@ class App extends Component {
                   <Row>
                     <Col xs>
                       <h4 className="mt-5">Commits</h4>
+                      <hr />
                     </Col>
                   </Row>
                   <Row>
                     <Col xs>
-                      <CommitList
-                        commits={this.state.commits}
-                        isLoading={this.state.isLoading}
-                        pageSize={this.state.pageSize}
-                      ></CommitList>
+                      <CommitList commits={this.state.commits}></CommitList>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      {this.state.isLoading && (
+                        <p>
+                          {`${this.state.commits.length} loaded so far... Loading next ${this.state.pageSize} `}
+                        </p>
+                      )}
                     </Col>
                   </Row>
                 </Container>

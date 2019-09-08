@@ -2,6 +2,14 @@
   margin-top: 1em;
 }
 
+.commit-list td {
+  vertical-align: middle;
+}
+
+.commit-list th {
+  border-top-width: 0;
+}
+
 .header {
   text-transform: uppercase;
   font-weight: 100;

@@ -13,7 +13,7 @@
 .no-image-avatar {
   border-radius: 50%;
   width: 26px;
-  height: auto;
+  height: 26px;
   display: flex;
   align-content: center;
   justify-content: center;
@@ -22,6 +22,9 @@
   text-transform: uppercase;
   font-weight: 700;
   color: white;
+}
+.no-image-avatar span {
+  padding-top: 2px;
 }
 
 .name-container {

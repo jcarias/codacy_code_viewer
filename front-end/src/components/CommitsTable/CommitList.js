@@ -14,13 +14,13 @@ const getTimeAgo = (timeAgo, dateString) => {
   return timeAgo.format(date);
 };
 
-const CommitList = ({ commits, isLoading, pageSize }) => {
+const CommitList = ({ commits }) => {
   TimeAgo.addLocale(en);
   const timeAgo = new TimeAgo();
 
   // Add locale-specific relative date/time formatting rules.
   return (
-    <Table responsive hover>
+    <Table responsive hover className="commit-list">
       <thead>
         <tr>
           <th width="25%">
@@ -67,11 +67,6 @@ const CommitList = ({ commits, isLoading, pageSize }) => {
             </td>
           </tr>
         ))}
-        {isLoading && (
-          <tr>
-            <td colSpan="4">{`${commits.length} loaded so far... Loading next ${pageSize} `}</td>
-          </tr>
-        )}
       </tbody>
     </Table>
   );
