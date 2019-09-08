@@ -14,7 +14,7 @@ const getTimeAgo = (timeAgo, dateString) => {
   return timeAgo.format(date);
 };
 
-const CommitList = ({ commits }) => {
+const CommitList = ({ commits, handleRowClick }) => {
   TimeAgo.addLocale(en);
   const timeAgo = new TimeAgo();
 
@@ -22,7 +22,7 @@ const CommitList = ({ commits }) => {
   return (
     <Table responsive hover className="commit-list">
       <thead>
-        <tr>
+        <tr className="commit-list-header">
           <th width="25%">
             <span className="header text-secondary">Author</span>
           </th>
@@ -39,7 +39,7 @@ const CommitList = ({ commits }) => {
       </thead>
       <tbody>
         {commits.map((commit, key) => (
-          <tr key={key}>
+          <tr key={key} onClick={() => handleRowClick(commit)}>
             <th>
               <Avatar
                 url={commit.committer.avatarUrl}

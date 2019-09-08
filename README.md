@@ -57,8 +57,7 @@ The directory where you execute the cloning will now be referred as "`BASE_DIR`"
    ```
 
 1. Compile & Build 1. Enter the dir created by the repository clone.
-     
-    `shell $ cd <BASE_DIR>/codacy_code_viewer/` 1. Run maven install command
+   `shell $ cd <BASE_DIR>/codacy_code_viewer/` 1. Run maven install command
    `shell $ mvn clean install`
    Done! You can find the resulting Web Application (`.war` file) under `<BASE DRI>/codacy_code_viewer/base_api/target`
 
@@ -105,10 +104,10 @@ The frontend can be ejected and have the minified resources deployed into a wer 
    $ cd <BASE_DIR>/codacy_code_viewer/front-end
    ```
 
-1. You must edit the source code to change API address. Change the API URL address in line 18 of the file `src\App.js`. If all the defaults were used and Tomcat is running locally the final value should be as follows:
+1. You must edit the source code to change API address. Change the API URL address in constants file `src\constants.js`. If all the defaults were used and Tomcat is running locally the final value should be as follows:
 
    ```javascript
-   const COMMITS_API = "http://localhost:8080/base_api/api/commits";
+   export const COMMITS_API = "http://localhost:8080/base_api/api/commits";
    ```
 
 1. Run the app on a test server (`http://localhost:3000`). (You case use either **NPM** or **Yarn**).

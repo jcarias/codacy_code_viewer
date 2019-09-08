@@ -6,7 +6,7 @@
   vertical-align: middle;
 }
 
-.commit-list th {
+.commit-list .commit-list-header > th {
   border-top-width: 0;
 }
 
@@ -34,4 +34,8 @@
 
 th td.avatar-column {
   width: 32px;
+}
+
+.commit-list tbody tr {
+  cursor: pointer;
 }
