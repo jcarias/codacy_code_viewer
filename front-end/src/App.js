@@ -15,7 +15,7 @@ import "./App.css";
 import AlertModal from "./components/AlertModal/AlertModal";
 import Loader from "./components/Loader";
 
-const COMMITS_API = "http://localhost:8080/base_api_war_exploded/api/commits";
+const COMMITS_API = "http://localhost:8080/base_api/api/commits";
 
 class App extends Component {
   constructor(props) {
