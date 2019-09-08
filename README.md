@@ -124,7 +124,7 @@ The frontend can be ejected and have the minified resources deployed into a wer 
 
 The API exposes a single endpoint `/api/commits`. To get list of commits you should make a POST request with the following body:
 
-```json
+```javascript
 {
   "pageSize": 50,
   "url": "https://github.com/facebook/react"
@@ -141,7 +141,7 @@ The API exposes a single endpoint `/api/commits`. To get list of commits you sho
 
 The expected response should be something like this:
 
-```json
+```javascript
 {
   "lastCommitSha": "2f15881859475cee7945eafbc7252244ce240100",
   "pageSize": 2,
