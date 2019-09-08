@@ -13,6 +13,7 @@ import SideMenu from "./components/SideMenu/SideMenu";
 
 import "./App.css";
 import AlertModal from "./components/AlertModal/AlertModal";
+import Loader from "./components/Loader";
 
 const COMMITS_API = "http://localhost:8080/base_api_war_exploded/api/commits";
 
@@ -166,9 +167,23 @@ class App extends Component {
                   <Row>
                     <Col>
                       {this.state.isLoading && (
-                        <p>
-                          {`${this.state.commits.length} loaded so far... Loading next ${this.state.pageSize} `}
-                        </p>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center"
+                          }}
+                        >
+                          <span className="mr-2">
+                            {`${this.state.commits.length} loaded so far. Loading more ${this.state.pageSize}...`}
+                          </span>
+                          <Loader color="rgba(16, 30, 53, 0.6)" size={24} />
+                        </div>
+                      )}
+                      {this.state.hasMore || (
+                        <p className="text-black-50">{`${
+                          this.state.commits ? this.state.commits.length : "No "
+                        } commits.`}</p>
                       )}
                     </Col>
                   </Row>

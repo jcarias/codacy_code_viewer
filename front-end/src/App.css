@@ -1,5 +1,5 @@
 .Loader {
-  animation: Loader-spin infinite 300mv linear;
+  animation: Loader-spin infinite 1s linear;
   pointer-events: none;
 }
 
