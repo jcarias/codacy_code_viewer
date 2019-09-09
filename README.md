@@ -104,13 +104,7 @@ The frontend can be ejected and have the minified resources deployed into a wer 
    $ cd <BASE_DIR>/codacy_code_viewer/front-end
    ```
 
-1. You must edit the source code to change API address. Change the API URL address in constants file `src\constants.js`. If all the defaults were used and Tomcat is running locally the final value should be as follows:
-
-   ```javascript
-   export const COMMITS_API = "http://localhost:8080/base_api/api/commits";
-   ```
-
-1. Run the app on a test server (`http://localhost:3000`). (You case use either **NPM** or **Yarn**).
+1) Run the app on a test server (`http://localhost:3000`). (You case use either **NPM** or **Yarn**).
    - Using `npm`:
      ```shell
      $ npm start

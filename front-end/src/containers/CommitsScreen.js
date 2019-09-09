@@ -11,7 +11,8 @@ import RepoUrlInput from "../components/RepoUrlInput";
 import CommitList from "../components/CommitsTable/CommitList";
 import AlertModal from "../components/AlertModal/AlertModal";
 import Loader from "../components/Loader";
-import { COMMITS_API } from "../constants";
+import { COMMITS_API_ENDPOINT, COMMITS_API_HOST } from "../constants";
+import Notification from "../components/Notification/Notification";
 
 class CommitsScreen extends Component {
   constructor(props) {
@@ -28,7 +29,13 @@ class CommitsScreen extends Component {
       modalTitle: "",
       errorCode: null,
       showCommitModal: false,
-      selectedCommit: null
+      selectedCommit: null,
+      notification: {
+        show: false,
+        title: "",
+        titleSmall: "",
+        message: ""
+      }
     };
   }
 
@@ -58,9 +65,20 @@ class CommitsScreen extends Component {
     }
   };
 
+  buildApiUrl = () => {
+    console.log(process.env.REACT_APP_CVV_API_HOST);
+    let apiUrl = process.env.REACT_APP_CVV_API_HOST;
+    if (!apiUrl) {
+      //Fallback to localhost
+      apiUrl = COMMITS_API_HOST;
+    }
+    return apiUrl.endsWith("/") ? apiUrl : apiUrl + "/" + COMMITS_API_ENDPOINT;
+  };
+
   fetchCommits = () => {
     this.setState({ isLoading: true });
-    fetch(COMMITS_API, {
+
+    fetch(this.buildApiUrl(), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -99,9 +117,16 @@ class CommitsScreen extends Component {
         });
       })
       .catch(error => {
+        let newNotification = {
+          show: error.message !== "",
+          title: "A problem occurred",
+          message: error.message
+        };
+
         this.setState({
           isLoading: false,
-          hasMore: false
+          hasMore: false,
+          notification: newNotification
         });
       });
   };
@@ -131,7 +156,14 @@ class CommitsScreen extends Component {
     this.setState({ showCommitModal: false });
   };
 
+  hideNotification = () => {
+    this.setState({
+      notification: { ...this.state.notification, show: false }
+    });
+  };
+
   render() {
+    const { notification } = this.state;
     return (
       <React.Fragment>
         <AlertModal
@@ -180,6 +212,14 @@ class CommitsScreen extends Component {
             </Row>
           </AlertModal>
         )}
+
+        <Notification
+          title={notification.title}
+          titleSmall={notification.titleSmall}
+          message={notification.message}
+          handleClose={this.hideNotification}
+          show={notification.show}
+        />
 
         <Container fluid>
           <Row>
