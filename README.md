@@ -104,15 +104,42 @@ The frontend can be ejected and have the minified resources deployed into a wer 
    $ cd <BASE_DIR>/codacy_code_viewer/front-end
    ```
 
-1) Run the app on a test server (`http://localhost:3000`). (You case use either **NPM** or **Yarn**).
+1. (_Optional_, this can be done in the next step) Add the `REACT_APP_CVV_API_HOST` environment variable with the address of the backend app (e.g. _`REACT_APP_CVV_API_HOST=http://localhost:8080/base_api`_).
+
+1. Run the app on a test server (`http://localhost:3000`). In this step you can define the environment variable if you skipped the previous step. (You case use either **NPM** or **Yarn**)
+
    - Using `npm`:
+
      ```shell
      $ npm start
      ```
+
    - Using `yarn`:
      ```shell
      $ yarn start
      ```
+
+   #### (Optional) Define the environment variable and run the app.
+
+   - Using `npm`:
+
+   ```shell
+   (Windows)
+    set "REACT_APP_CVV_API_HOST=<URL>" && npm start
+
+   (Linux and Mac OS)
+    REACT_APP_CVV_API_HOST=<URL> npm start
+   ```
+
+
+    - Using `yanr`:
+    ```shell
+    (Windows)
+    set "REACT_APP_CVV_API_HOST=<URL>" && yarn start
+
+    (Linux and Mac OS)
+    REACT_APP_CVV_API_HOST=<URL> yarn start
+    ```
 
 ## About the API
 

@@ -34,7 +34,8 @@ class CommitsScreen extends Component {
         show: false,
         title: "",
         titleSmall: "",
-        message: ""
+        message: "",
+        details: ""
       }
     };
   }
@@ -122,6 +123,10 @@ class CommitsScreen extends Component {
           title: "A problem occurred",
           message: error.message
         };
+
+        if (error.message === "Failed to fetch") {
+          newNotification.details = `A common cause for this problem is the API not available (API address: ${this.buildApiUrl()}) `;
+        }
 
         this.setState({
           isLoading: false,
@@ -219,6 +224,7 @@ class CommitsScreen extends Component {
           message={notification.message}
           handleClose={this.hideNotification}
           show={notification.show}
+          details={notification.details}
         />
 
         <Container fluid>

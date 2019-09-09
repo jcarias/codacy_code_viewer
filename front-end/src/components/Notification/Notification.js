@@ -7,7 +7,8 @@ const Notification = ({
   message,
   handleClose,
   show,
-  delay = 3000
+  delay = 3000,
+  details
 }) => {
   return (
     <div
@@ -30,7 +31,14 @@ const Notification = ({
             <strong className="mr-auto">{title}</strong>
             <small>{titleSmall}</small>
           </Toast.Header>
-          <Toast.Body className="text-danger">{message}</Toast.Body>
+          <Toast.Body>
+            <p className="text-danger">{message}</p>
+            {details && (
+              <p>
+                <small className="text-secondary">{details}</small>
+              </p>
+            )}
+          </Toast.Body>
         </Toast>
       </div>
     </div>
