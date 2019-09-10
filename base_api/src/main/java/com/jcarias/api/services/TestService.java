@@ -38,7 +38,7 @@ public class TestService {
 
 		RepoCommitExtractor extractor = null;
 		try {
-			extractor = new RepoCommitExtractor("https://github.com/naveenvemulapalli/");
+			extractor = new RepoCommitExtractor("https://github.com/naveenvemulapalli/", true);
 			Collection<CommitInfo> commits = extractor.getCommits();
 			Converter<Collection<CommitInfo>, JSONArray> converter = new CommitsInfoToJsonArray();
 			JSONArray jsonArray = converter.convert(commits);
@@ -75,7 +75,9 @@ public class TestService {
 			Collection<CommitInfo> commits = fetchCommits(url, pageSize, commitsRequest.getLastCommitSha());
 
 			//TODO: Add method to update(pull) or clone the local repository on a separate thread
-			RepoCommitExtractor extractor = new RepoCommitExtractor(url);
+			if(StringUtils.isBlank(commitsRequest.getLastCommitSha())){
+				new RepoCommitExtractor(url, StringUtils.isBlank(commitsRequest.getLastCommitSha()));
+			}
 
 			//Conversion of the files
 			Converter<Collection<CommitInfo>, JSONArray> converter = new CommitsInfoToJsonArray();

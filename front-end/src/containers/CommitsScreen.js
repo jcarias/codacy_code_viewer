@@ -11,7 +11,11 @@ import RepoUrlInput from "../components/RepoUrlInput";
 import CommitList from "../components/CommitsTable/CommitList";
 import AlertModal from "../components/AlertModal/AlertModal";
 import Loader from "../components/Loader";
-import { COMMITS_API_ENDPOINT, COMMITS_API_HOST } from "../constants";
+import {
+  COMMITS_API_ENDPOINT,
+  COMMITS_API_HOST,
+  COMMITS_API_PAGE_SIZE
+} from "../constants";
 import Notification from "../components/Notification/Notification";
 
 class CommitsScreen extends Component {
@@ -19,7 +23,6 @@ class CommitsScreen extends Component {
     super(props);
     this.state = {
       lastSha: null,
-      pageSize: 20,
       repoUrl: "",
       commits: [],
       isLoading: false,
@@ -73,18 +76,19 @@ class CommitsScreen extends Component {
       //Fallback to localhost
       apiUrl = COMMITS_API_HOST;
     }
-    return apiUrl.endsWith("/") ? apiUrl : apiUrl + "/" + COMMITS_API_ENDPOINT;
+    const hostUrl = apiUrl.endsWith("/") ? apiUrl : apiUrl + "/";
+    return hostUrl + COMMITS_API_ENDPOINT;
   };
 
   fetchCommits = () => {
     this.setState({ isLoading: true });
-
-    fetch(this.buildApiUrl(), {
+    const url = this.buildApiUrl();
+    fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Accept: "*/*" },
       body: JSON.stringify({
         lastCommitSha: this.state.lastSha,
-        pageSize: this.state.pageSize,
+        pageSize: COMMITS_API_PAGE_SIZE,
         url: this.state.repoUrl
       })
     })
@@ -105,10 +109,12 @@ class CommitsScreen extends Component {
       })
       .then(data => {
         let existingCommits = cloneDeep(this.state.commits);
-        const hasMoreCommits = this.state.lastSha !== data.lastCommitSha;
-        const newCommits = hasMoreCommits
-          ? [...existingCommits, ...data.commits]
-          : existingCommits;
+
+        const hasMoreCommits =
+          this.state.lastSha !== data.lastCommitSha &&
+          data.commits.length >= COMMITS_API_PAGE_SIZE;
+
+        const newCommits = [...existingCommits, ...data.commits];
 
         this.setState({
           isLoading: false,
@@ -258,7 +264,7 @@ class CommitsScreen extends Component {
                   }}
                 >
                   <span className="mr-2">
-                    {`${this.state.commits.length} loaded so far. Loading more ${this.state.pageSize}...`}
+                    {`${this.state.commits.length} loaded so far. Loading more ${COMMITS_API_PAGE_SIZE}...`}
                   </span>
                   <Loader color="rgba(16, 30, 53, 0.6)" size={24} />
                 </div>

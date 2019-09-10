@@ -36,14 +36,14 @@ public class RepoCommitExtractor {
 	 *
 	 * @param repoURL remote repository URL
 	 */
-	public RepoCommitExtractor(String repoURL) throws IOException, GitAPIException {
+	public RepoCommitExtractor(String repoURL, boolean isPullNeeded) throws IOException, GitAPIException {
 		if (new UrlValidator().isValid(repoURL)) {
 			this.repoURL = repoURL;
 			this.repoDir = new File(buildRepoDirName(repoURL));
 			this.commits = new ArrayList<>();
 
 			try {
-				repository = openLocalRepo();
+				repository = openLocalRepo(isPullNeeded);
 			} catch (RepositoryNotFoundException rnfe) {
 				System.out.println(rnfe.getMessage());
 				repository = cloneRemoteRepo(this.repoURL);
@@ -53,9 +53,9 @@ public class RepoCommitExtractor {
 		}
 	}
 
-	private static String buildRepoDirName(String repoURL){
+	private static String buildRepoDirName(String repoURL) {
 		String baseDir = System.getenv("CCV_REPO_DIR");
-		if(StringUtils.isEmptyOrNull(baseDir)){
+		if (StringUtils.isEmptyOrNull(baseDir)) {
 			baseDir = System.getProperty("user.dir");
 		}
 
@@ -63,7 +63,7 @@ public class RepoCommitExtractor {
 	}
 
 	public RepoCommitExtractor(String repoURL, int pageSize, String lastSha) throws IOException, GitAPIException {
-		this(repoURL);
+		this(repoURL, StringUtils.isEmptyOrNull(lastSha));
 		this.pageSize = pageSize;
 		this.lastSha = lastSha;
 	}
@@ -75,15 +75,17 @@ public class RepoCommitExtractor {
 		return commits;
 	}
 
-	private Repository openLocalRepo() throws IOException {
+	private Repository openLocalRepo(boolean isPullNeeded) throws IOException {
 
 		File localRepoDir = new File(this.repoDir + File.separator + ".git");
 		Git git = Git.open(localRepoDir);
 
-		try {
-			git.pull().call();
-		} catch (GitAPIException e) {
-			e.printStackTrace();
+		if (isPullNeeded) {
+			try {
+				git.pull().call();
+			} catch (GitAPIException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return git.getRepository();
@@ -128,12 +130,17 @@ public class RepoCommitExtractor {
 
 				commits.add(commitInfo);
 
-				if(commits.size() == this.pageSize)
+				if (commits.size() == this.pageSize)
 					break;
 			}
 
 			walk.dispose();
 		}
+		repository.close();
+	}
+
+	public void dispose(){
+		this.repository.close();
 	}
 
 }

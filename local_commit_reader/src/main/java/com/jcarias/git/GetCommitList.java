@@ -18,7 +18,7 @@ public class GetCommitList {
 		}
 
 		//Open or Clone repository to read commit list
-		RepoCommitExtractor extractor = new RepoCommitExtractor(args[0]);
+		RepoCommitExtractor extractor = new RepoCommitExtractor(args[0], true);
 		Collection<CommitInfo> commits = extractor.getCommits();
 
 		//Convert results to JSON
